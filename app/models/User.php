@@ -36,7 +36,11 @@ class User {
     }
     
     public function updateLastLogin($userId) {
-        $this->db->query("UPDATE users SET last_login = NOW() WHERE id = ?", [$userId]);
+        if (defined('USE_SQLITE') && USE_SQLITE) {
+            $this->db->query("UPDATE users SET last_login = datetime('now') WHERE id = ?", [$userId]);
+        } else {
+            $this->db->query("UPDATE users SET last_login = NOW() WHERE id = ?", [$userId]);
+        }
     }
     
     public function verifyPassword($password, $hash) {
@@ -73,9 +77,16 @@ class User {
         
         $stats['total_users'] = $this->db->fetch("SELECT COUNT(*) as count FROM users")['count'];
         $stats['active_users'] = $this->db->fetch("SELECT COUNT(*) as count FROM users WHERE is_active = 1")['count'];
-        $stats['new_users_month'] = $this->db->fetch(
-            "SELECT COUNT(*) as count FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)"
-        )['count'];
+        
+        if (defined('USE_SQLITE') && USE_SQLITE) {
+            $stats['new_users_month'] = $this->db->fetch(
+                "SELECT COUNT(*) as count FROM users WHERE created_at >= date('now', '-1 month')"
+            )['count'];
+        } else {
+            $stats['new_users_month'] = $this->db->fetch(
+                "SELECT COUNT(*) as count FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)"
+            )['count'];
+        }
         
         return $stats;
     }

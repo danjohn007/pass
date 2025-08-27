@@ -25,6 +25,10 @@ define('DB_USER', 'pass_user');
 define('DB_PASS', 'pass_password123');
 define('DB_CHARSET', 'utf8mb4');
 
+// For demo purposes, use SQLite if MySQL is not available
+define('USE_SQLITE', true);
+define('SQLITE_PATH', ROOT_PATH . '/database/pass.db');
+
 // Application settings
 define('APP_NAME', 'PASS - Plataforma de Autoevaluación y Seguimiento Psicológico');
 define('APP_VERSION', '1.0.0');
